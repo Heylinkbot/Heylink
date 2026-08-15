@@ -55,6 +55,9 @@ NODE_ENV=production
 MONGODB_URI=mongodb+srv://...
 JWT_SECRET=GENERATE_A_RANDOM_64_HEX_CHARACTER_SECRET
 WEB_ORIGIN=https://YOUR-VERCEL-DOMAIN.vercel.app
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_OAUTH_WEB_CLIENT_ID
+RESEND_API_KEY=YOUR_RESEND_API_KEY
+EMAIL_FROM=HeyLink <noreply@YOUR_VERIFIED_DOMAIN>
 LOG_LEVEL=info
 API_RATE_LIMIT=600
 SESSION_DATA_DIR=/data/sessions
@@ -89,6 +92,7 @@ For multiple replicas or a large commercial deployment, use Meta WhatsApp Cloud 
 
 ```env
 VITE_API_URL=https://YOUR-RAILWAY-API-DOMAIN.up.railway.app
+VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_OAUTH_WEB_CLIENT_ID
 ```
 
 5. Deploy the frontend.

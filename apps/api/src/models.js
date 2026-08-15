@@ -39,6 +39,9 @@ const WorkspaceSchema = new Schema({
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
+  googleId: { type: String, sparse: true },
+  passwordResetTokenHash: { type: String, select: false },
+  passwordResetExpiresAt: { type: Date, select: false },
   displayName: String,
   role: { type: String, enum:['SUPERADMIN','OWNER','STAFF'], default:'OWNER' },
   workspaceId: { type: Schema.Types.ObjectId, ref:'Workspace', default:null },

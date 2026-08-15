@@ -1,0 +1,35 @@
+.success {
+  color: #087a58;
+  background: #ecfbf5;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.link-button {
+  border: 0;
+  background: transparent;
+  color: #087a58;
+  font-weight: 700;
+  padding: 5px;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+  gap: 10px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  height: 1px;
+  background: #e2e8f0;
+  flex: 1;
+}
+
+.google-login {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
