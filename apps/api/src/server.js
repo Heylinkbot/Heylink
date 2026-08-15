@@ -20,7 +20,9 @@ import { Workspace, User, Product, Faq, Order, Conversation, Message, Integratio
 
 const app = express();
 const server = http.createServer(app);
-const port = Number(process.env.API_PORT || process.env.PORT || 5050);
+// Hosting platforms such as Railway inject PORT and route traffic to it.
+// Keep API_PORT only as a local-development fallback.
+const port = Number(process.env.PORT || process.env.API_PORT || 5050);
 const jwtSecret = process.env.JWT_SECRET;
 const isProduction = process.env.NODE_ENV === 'production';
 if(isProduction && (!jwtSecret || jwtSecret.length < 32)) throw new Error('JWT_SECRET must be at least 32 characters in production');
