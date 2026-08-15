@@ -5,7 +5,10 @@ import {LayoutDashboard,MessageSquare,Package,CircleHelp,ShoppingCart,Zap,Users,
 import {io} from 'socket.io-client';
 import './styles.css';
 
-const API=import.meta.env.VITE_API_URL||'http://localhost:5050';
+const configuredApi=String(import.meta.env.VITE_API_URL||'').trim().replace(/^\/+|\/+$/g,'');
+const API=configuredApi
+  ? (/^https?:\/\//i.test(configuredApi)?configuredApi:`https://${configuredApi}`)
+  : 'http://localhost:5050';
 const api=async(path,opts={})=>{const t=localStorage.getItem('token');let r;try{r=await fetch(API+path,{...opts,headers:{'Content-Type':'application/json',...(t?{Authorization:`Bearer ${t}`}:{}) ,...(opts.headers||{})}})}catch{throw new Error('Cannot connect to the API. Please try again shortly.')}if(r.status===401&&t){localStorage.removeItem('token');location.reload();throw new Error('Your session expired. Please sign in again.')}if(!r.ok)throw new Error((await r.json().catch(()=>({}))).error||`HTTP ${r.status}`);return r.status===204?null:r.json();};
 
 function App(){
