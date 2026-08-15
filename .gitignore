@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+apps/*/.env
+apps/*/.env.*
+!apps/*/.env.example
+*.log
+apps/api/data/sessions/
+apps/web/dist/
+.vercel/
+.railway/
+.npm/
+coverage/
+.DS_Store

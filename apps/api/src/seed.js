@@ -1,0 +1,20 @@
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { Workspace, User } from './models.js';
+
+const uri=process.env.MONGODB_URI;
+if(!uri)throw new Error('MONGODB_URI is required');
+await mongoose.connect(uri);
+const ownerEmail=(process.env.SEED_OWNER_EMAIL||'owner@example.com').toLowerCase();
+const adminEmail=(process.env.SEED_ADMIN_EMAIL||'admin@example.com').toLowerCase();
+const ownerPassword=process.env.SEED_OWNER_PASSWORD||'Admin@123456';
+const adminPassword=process.env.SEED_ADMIN_PASSWORD||'Admin@123456';
+let workspace=await Workspace.findOne({slug:'demo-store'});
+if(!workspace)workspace=await Workspace.create({name:'Demo Store',slug:'demo-store',currency:'LKR'});
+if(!await User.findOne({email:ownerEmail}))await User.create({email:ownerEmail,passwordHash:await bcrypt.hash(ownerPassword,12),displayName:'Demo Store Owner',role:'OWNER',workspaceId:workspace._id});
+if(!await User.findOne({email:adminEmail}))await User.create({email:adminEmail,passwordHash:await bcrypt.hash(adminPassword,12),displayName:'Platform Administrator',role:'SUPERADMIN'});
+console.log('Seed complete');
+console.log(`Owner: ${ownerEmail}`);
+console.log(`Superadmin: ${adminEmail}`);
+await mongoose.disconnect();
