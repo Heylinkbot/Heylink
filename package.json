@@ -2,7 +2,7 @@
   "name": "whatsapp-agent-platform",
   "private": true,
   "version": "2.0.0",
-  "engines": {"node": ">=20 <23"},
+  "engines": {"node": "20.x"},
   "packageManager": "npm@11.12.1",
   "workspaces": ["apps/api", "apps/web"],
   "scripts": {

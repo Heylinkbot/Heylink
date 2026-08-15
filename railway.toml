@@ -1,6 +1,5 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "npm ci"
 
 [deploy]
 startCommand = "npm run start -w apps/api"
