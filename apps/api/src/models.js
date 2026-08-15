@@ -39,7 +39,7 @@ const WorkspaceSchema = new Schema({
 const UserSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
-  googleId: { type: String, sparse: true },
+  googleId: { type: String, unique: true, sparse: true },
   passwordResetTokenHash: { type: String, select: false },
   passwordResetExpiresAt: { type: Date, select: false },
   displayName: String,
