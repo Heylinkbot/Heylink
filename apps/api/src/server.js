@@ -181,15 +181,31 @@ async function createOrderFromAgent(workspaceId,args,products){if(!args?.custome
 
 app.use((err,req,res,_next)=>{logger.error({err,path:req.path},'request failed');if(err?.code===11000)return res.status(409).json({error:'A record with that value already exists'});if(err?.name==='ValidationError')return res.status(400).json({error:err.message});res.status(500).json({error:process.env.NODE_ENV==='production'?'Internal server error':err.message});});
 
-async function main(){
-  const uri=process.env.MONGODB_URI;if(!uri)throw new Error('MONGODB_URI is required. Use MongoDB Atlas or a local MongoDB server.');
-  await mongoose.connect(uri,{serverSelectionTimeoutMS:10000});logger.info('MongoDB connected');
+let mongoConnecting=false;
+async function connectMongo(){
+  if(mongoose.connection.readyState===1||mongoConnecting)return;
+  const uri=process.env.MONGODB_URI;
+  if(!uri){logger.error('MONGODB_URI is missing; database routes are not ready');return;}
+  mongoConnecting=true;
+  try{
+    await mongoose.connect(uri,{serverSelectionTimeoutMS:15000});
+    logger.info('MongoDB connected');
+  }catch(err){
+    logger.error({err},'MongoDB connection failed; retrying in 10 seconds');
+    return;
+  }finally{mongoConnecting=false;}
   // Remove the obsolete unique index from older schema versions. The current
   // Message model uses externalId; the old clientId:null index rejects every
   // second message in a conversation.
   await Message.collection.dropIndex('conversationId_1_clientId_1').catch(err=>{if(err.codeName!=='IndexNotFound')logger.warn({err},'old message index cleanup skipped');});
+  const existing=await WhatsappSession.find({mode:'QR',status:{$in:['connected','disconnected','qr']}}).sort({createdAt:-1}).catch(()=>[]);const restored=new Set();for(const s of existing){const workspace=String(s.workspaceId);if(restored.has(workspace)){await WhatsappSession.updateOne({_id:s._id},{$set:{status:'disconnected'}}).catch(()=>{});continue;}restored.add(workspace);startQrSession(s).catch(err=>logger.warn({err,sessionId:String(s._id)},'session restore failed'));}
+}
+async function main(){
   await fs.mkdir(sessionRoot,{recursive:true});
-  server.listen(port,async()=>{console.log(`WhatsApp Agent API running on http://localhost:${port}`);const existing=await WhatsappSession.find({mode:'QR',status:{$in:['connected','disconnected','qr']}}).sort({createdAt:-1}).catch(()=>[]);const restored=new Set();for(const s of existing){const workspace=String(s.workspaceId);if(restored.has(workspace)){await WhatsappSession.updateOne({_id:s._id},{$set:{status:'disconnected'}}).catch(()=>{});continue;}restored.add(workspace);startQrSession(s).catch(err=>logger.warn({err,sessionId:String(s._id)},'session restore failed'));}});
+  server.listen(port,'0.0.0.0',()=>console.log(`WhatsApp Agent API running on 0.0.0.0:${port}`));
+  mongoose.connection.on('disconnected',()=>logger.warn('MongoDB disconnected'));
+  await connectMongo();
+  setInterval(()=>connectMongo().catch(err=>logger.error({err},'MongoDB retry failed')),10000).unref();
 }
 process.on('SIGTERM',async()=>{for(const st of sessions.values())try{st.sock?.end?.();}catch{}await mongoose.disconnect();server.close(()=>process.exit(0));});
 process.on('SIGINT',async()=>{await mongoose.disconnect();server.close(()=>process.exit(0));});
