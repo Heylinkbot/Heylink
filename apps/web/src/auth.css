@@ -33,3 +33,18 @@
   justify-content: center;
   min-height: 44px;
 }
+
+.knowledge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5ebf3;
+}
+
+.knowledge-row p {
+  margin: 6px 0 0;
+  color: #64748b;
+  white-space: pre-wrap;
+}

@@ -241,3 +241,7 @@ apps/
       styles.css
     .env.example
 ```
+
+
+
+mongodb+srv://connectsphere100_db_user:ajbBcs3xwdKoU0BT@cluster0.ozns2ap.mongodb.net/?appName=Cluster0
